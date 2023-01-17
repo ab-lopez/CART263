@@ -4,10 +4,9 @@ Abigail Lopez 40203553
 
 I'm bad at tic tac toe. This is a tic tac toe game! Kachow.
 
-I couldn't figure out how to get it to reset. I'm sure there's an easier way
-to do this without the magic square, and I'm sure I could figure out how to 
-make it reset and keep score if I had a counter variable or something,
-but without looking up the answer I don't know how to do it :/
+I forgot arrays existed. I also forgot how to code loops.
+So I'm doing this very VERY tediously.
+I use the concept of magic squares to see whether or not a player has one.
 
 Glad the base game works tho! Wahoo :D
 
@@ -23,6 +22,11 @@ let yPos;
 let playerOneWins = false; // variables to determine what the outcome of the match is
 let playerTwoWins = false; // when they turn true, it will display the message of who wins
 let drawMatch = false;
+
+let p1ScoreCount = 0;   // variables to track the score
+let p2ScoreCount = 0;
+
+let resetGame = false; // Variable to "reset" the board without necessarily reloading the page
 
 let playerOneTallyr1 = 0;
 let playerOneTallyr2 = 0;
@@ -73,7 +77,70 @@ Creating the checkerboard!
 Going for a teal/orange/yellowy green colour scheme..
 */
 function setup() {
-    createCanvas(900, 900); // Creating the checkerboard! 
+    createCanvas(900, 1100); // Creating the checkerboard! 
+    displayBoard();
+}
+
+
+/**
+Description of draw()
+*/
+function draw() {
+    displayScore(); // display score
+}
+
+function mousePressed(){ // when each player clicks:
+    if(resetGame == false){ // if the game doesn't need to be reset, play
+        print("mouseX = " + mouseX);
+        print("mouseY = " + mouseY);
+        wherePutShape(); // determines where to put the shape + makes a note of it to track score
+        printShape(); // prints X or O
+        playerOne = !playerOne; // changes the turn
+        print("player 1's turn? " + playerOne); // confirms whose turn it is
+        
+        checkWin(); // check to see if someone wins
+    }
+    else{ // if reset game..
+        playerOne = true; // reset the turn to start w player X
+
+        displayBoard(); // redraw the board to clear the canvas
+
+        resetGame = false; // reset false bc new game is starting
+    }
+    
+    if(playerOneWins || playerTwoWins || drawMatch){
+        displayWin(); // if someone wins/they draw, display the win/draw message
+
+        playerOneWins = false; // reset all the variables to avoid adding extra wins
+        playerTwoWins = false;
+        drawMatch = false;
+
+        playerOneTallyr1 = 0; // reset variables to reset magic square sum
+        playerOneTallyr2 = 0;
+        playerOneTallyr3 = 0;
+        playerOneTallyc1 = 0;
+        playerOneTallyc2 = 0;
+        playerOneTallyc3 = 0;
+        playerOneTallyd1 = 0;
+        playerOneTallyd2 = 0;
+
+        playerTwoTallyr1 = 0;
+        playerTwoTallyr2 = 0;
+        playerTwoTallyr3 = 0;
+        playerTwoTallyc1 = 0;
+        playerTwoTallyc2 = 0;
+        playerTwoTallyc3 = 0;
+        playerTwoTallyd1 = 0;
+        playerTwoTallyd2 = 0;
+
+        fullBoard = 0;     
+        resetGame = true; // set the game in reset mode... next time user clicks it will clear the win/draw message and reset the board
+    }
+
+
+}
+
+function displayBoard(){ // funciton to display checkerboard so i can redraw over it
     background(10, 90, 115); // dark teal
 
     noStroke(); // forgot how to do checkerboards w loops so we're doing it one by one
@@ -82,30 +149,6 @@ function setup() {
     square(0, 300, 300);
     square(600, 300, 300);
     square(300, 600, 300);
-
-}
-
-
-/**
-Description of draw()
-*/
-function draw() {
-
-}
-
-function mousePressed(){ // when each player clicks:
-    print("mouseX = " + mouseX);
-    print("mouseY = " + mouseY);
-    wherePutShape(); // determines where to put the shape + makes a note of it to track score
-    printShape(); // prints X or O
-    playerOne = !playerOne; // changes the turn
-    print("player 1's turn? " + playerOne); // confirms whose turn it is
-    
-    checkWin(); // check to see if someone wins
-    
-    if(playerOneWins || playerTwoWins || drawMatch){
-        displayWin(); // if someone wins/they draw, display the win/draw message
-    }
 }
 
 function displayWin(){ //display the win
@@ -119,6 +162,7 @@ function displayWin(){ //display the win
         textSize(150);
         fill(250, 170, 5); // dark teal
         text('X WINS', 185, 500) // X WINS display message
+        p1ScoreCount = p1ScoreCount + 1; // increase score count
     }
 
     if(playerTwoWins){
@@ -126,6 +170,7 @@ function displayWin(){ //display the win
         textSize(150);
         fill(190, 235, 30); // dark teal
         text('O WINS', 185, 500) // O WINS display message
+        p2ScoreCount = p2ScoreCount + 1;
     }
 
     if(drawMatch){
@@ -134,6 +179,36 @@ function displayWin(){ //display the win
         fill(10, 90, 115); // dark teal
         text('DRAW', 225, 500) // Draw
     }
+}
+
+function displayScore(){
+   // score board
+   noStroke();
+   fill(250, 240, 220); // off white fill
+   rect(150, 945, 280, 100, 50); // rectangle background for X
+   noStroke();
+   fill(250, 170, 5); // orange
+   textSize(100);
+   text('X', 40, 1030); // display X
+   
+   fill(250, 240, 220); // off white fill
+   rect(580, 945, 280, 100, 50); // rectangle background for O
+   strokeWeight(10);
+   stroke(190, 235, 30); // green
+   noFill();
+   circle(510, 990, 80); // display O
+   
+   // Display wins of X
+   textSize(60);
+   noStroke();
+   fill(10, 90, 115); // dark teal
+   text("WINS: " + p1ScoreCount, 185, 1015);    
+
+   // Display wins of X
+   textSize(60);
+   noStroke();
+   fill(10, 90, 115); // dark teal
+   text("WINS: " + p2ScoreCount, 615, 1015);    
 }
 
  function printShape(){
