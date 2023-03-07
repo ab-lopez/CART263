@@ -15,6 +15,15 @@ let bubbleArray = []; // array for bubbles
 let bubbleCount = 0; // bubble counter... increases to display + move each bubble
                      // that is added to the array
 
+let squareArray = []; // array for squares
+let numRows = 20; // number of rows of squares
+let numCols = 40; // number of columns....
+
+let coralTable; // declare csv table
+let bleachPercent = []; // creating an array. entries in this array will correspond w/
+                               // coral bleached column AS WELL AS the opacity of squares.
+let k = 0; // counter
+
 "use strict";
 
 
@@ -23,10 +32,13 @@ Description of preload
 */
 function preload() {
 
+// load csv table
+coralTable = loadTable("assets/coralBleaching_database.csv", "csv", "header");
+
 // assign color variables:
 blue = color(68, 156, 154); // background colours... ocean
 bgBlue = color(143, 179, 194); // bg coral
-bgPink = color(116, 142, 166);
+bgPink = color(138, 161, 184);
 
 fgSand = color(212, 176, 191); // foreground colours...
 fgPink = color(204, 120, 156); // coral
@@ -48,6 +60,29 @@ bubbleTimer(); // start bubble timer to create bubbles.. only needs to run once
                // hence why its in setup
 
 
+// for (var r = 0; r < coralTable.getRowCount(); r++){
+//     coralBleachedPercent[r] = (coralTable.getNum(r, 9));
+// }
+
+for(let r = 0; r < coralTable.getRowCount(); r++){
+    bleachPercent[r] = coralTable.getString(r, 9);
+}
+
+// for(let i = 0; i < numRows; i++){
+//     for(let j = 0; j < numCols; j++){
+//         let square = new SquareParticle(i, j, (random(255) * (bleachPercent[k]))); // create variable, hold new square particle
+//         squareArray.push(square); // push that particle into the array
+
+//         if((i == 9 || i == 19) && j == 0){
+//             k = 0; // repeat if reaches a certain point... my csv file only has a certain amt. of rows, and there are 800 squares. i repeat things a couple of times.
+//         }
+//         else{
+//             k++;
+//         }
+//     }
+// }
+
+
 }
 
 
@@ -64,14 +99,23 @@ for(let i = 0; i < bubbleCount; i++){ // for each bubble in the array according 
     bubbleArray[i].bubblesUp(); // make bubbles rise
 }
 
-// separate functions so that
+// separate functions so that its easier for me to code hehe
 displayBGCoral(); // display bg coral
 displayFGCoral(); // display foreground coral
 
+// display squares!
+for(let i = 0; i < squareArray.length; i++){
+    squareArray[i].display();
+}
 }
 
 function mousePressed(){
-    print(mouseX, mouseY);
+ for(let i = 0; i < bleachPercent.length; i++){
+      print(255 * (bleachPercent[i] / 100));
+ }
+
+ print(bleachPercent.length);
+
 }
 
 // function to display background coral
@@ -675,5 +719,20 @@ class BubbleParticle {
 
     bubblesUp() {
         this.y -= 1; // y decreases, making the bubble go "up"
+    }
+}
+
+class SquareParticle {
+    constructor(row, col, opacity) {
+        this.row = row;
+        this.col = col;
+        this.colour = 255;
+        this.opacity = opacity;
+        this.size = 25; // size of square
+    }
+
+    display() {
+        fill(this.colour, this.opacity); // fill random colour
+        rect(this.col * this.size, this.row * this.size, this.size, this.size); // draw square at current row/column
     }
 }
