@@ -1,9 +1,33 @@
 /**
-Title of Project
-Author Name
+Under the Sea
+Abigail Lopez 40203553
 
-This is a template. You must fill in the title,
-author, and this description to match your project!
+Hi! This is my data visualization project! My project is about 
+coral bleaching around the world from the years 1983-2005 and
+how it's a major threat to our oceans and its ecosystems.
+
+When the file is first loaded, it depicts a vibrant coral reef,
+drawn all with vector points. As time passes, however, the image
+begins to be disrupted by squares representing coral bleach. This
+is where the data visualization comes in! The data is taken from a csv
+file, and each square represents a different coral site and the percentage of
+coral that has been bleached at that site. The squares appear one by one in chronological
+order, from 1983 and so on and so forth (there is no exact number of squares that correlate
+to the years because the study chooses different amounts of sites to examine per year, it
+fluctuates).
+
+I'm pretty happy with it! I'd like to make the order of squares appearing to be more
+random while still keeping the tie in to the date, but I think that it's a good visualization
+of the data and really represents/symbolizes how coral reefs – these really beautiful ecosystems
+(That are also animals! Coral is not a plant or a weird rock of some sort or an inanimate object
+of some sort, they're invertebrates! When they're bleached those are animals that are fully dead!!
+I'm very passionate about coral reefs if you couldn't tell) are dying off due to changing temperatures
+of the sea.
+
+The file is from the following study:
+https://figshare.com/articles/dataset/Bleaching_database_V1_0_xlsx/4743778
+
+Yay, coral! :D
 */
 
 // Declare colour variables
@@ -28,7 +52,7 @@ let k = 0; // counter
 
 
 /**
-Description of preload
+This is my preload! I just load the csv table and define colour variables :D
 */
 function preload() {
 
@@ -51,7 +75,9 @@ bHLight = color(126, 222, 220, 200);
 
 
 /**
-Description of setup
+This is my setup! I create a canvas, set a timer to create bubble objects,
+start storing the percent bleached values from the csv file
+and start creating the  objects for the grid of squares :D
 */
 function setup() {
 
@@ -59,35 +85,23 @@ createCanvas(800, 500); // create a canvas
 bubbleTimer(); // start bubble timer to create bubbles.. only needs to run once
                // hence why its in setup
 
-
-// for (var r = 0; r < coralTable.getRowCount(); r++){
-//     coralBleachedPercent[r] = (coralTable.getNum(r, 9));
-// }
-
-for(let r = 0; r < coralTable.getRowCount(); r++){
-    bleachPercent[r] = coralTable.getString(r, 9);
+for(let r = 0; r < coralTable.getRowCount(); r++){ 
+    bleachPercent[r] = coralTable.getString(r, 9); // for every row in the percent bleached column...
+                                                   // add it to a specific array
 }
 
-// for(let i = 0; i < numRows; i++){
-//     for(let j = 0; j < numCols; j++){
-//         let square = new SquareParticle(i, j, (random(255) * (bleachPercent[k]))); // create variable, hold new square particle
-//         squareArray.push(square); // push that particle into the array
+makeSquare(); // create square objects on a timer!
 
-//         if((i == 9 || i == 19) && j == 0){
-//             k = 0; // repeat if reaches a certain point... my csv file only has a certain amt. of rows, and there are 800 squares. i repeat things a couple of times.
-//         }
-//         else{
-//             k++;
-//         }
-//     }
-// }
 
 
 }
 
 
 /**
-Description of draw()
+This is my draw function!
+I make a background, I display bubbles + make them rise w a predefined function,
+I display the coral vector drawings,
+and I display the squares + have them slowly fade into existence
 */
 function draw() {
 
@@ -106,17 +120,10 @@ displayFGCoral(); // display foreground coral
 // display squares!
 for(let i = 0; i < squareArray.length; i++){
     squareArray[i].display();
+    squareArray[i].bleach();
 }
 }
 
-function mousePressed(){
- for(let i = 0; i < bleachPercent.length; i++){
-      print(255 * (bleachPercent[i] / 100));
- }
-
- print(bleachPercent.length);
-
-}
 
 // function to display background coral
 // essentially draws it by creating a shape by listing each vertex
@@ -700,6 +707,27 @@ function makeBubble(){
     bubbleCount++; // increase count so the for loop in the draw function knows how many bubbles to display
 }
 
+function makeSquare(){
+    let i = 0, j = 0;
+    let createNextSquare = function() {
+        if (i < numRows && j < numCols) {
+            let square = new SquareParticle(i, j, (255 * (bleachPercent[k] / 100))); // create variable, hold new square particle
+            squareArray.push(square); // push that particle into the array
+
+            k++;
+ 
+            j++;
+            if (j == numCols) {
+                i++;
+                j = 0;
+            }
+            setTimeout(createNextSquare, random(100)); // call createNextSquare after randomized delay
+        }
+    };
+
+    createNextSquare(); // yay start the timeout :D
+}
+
 class BubbleParticle {
     constructor(x, size) {
         this.x = x;
@@ -729,10 +757,17 @@ class SquareParticle {
         this.colour = 255;
         this.opacity = opacity;
         this.size = 25; // size of square
+        this.initialOpacity = 0;
     }
 
     display() {
-        fill(this.colour, this.opacity); // fill random colour
+        fill(this.colour, this.initialOpacity); // fill random colour
         rect(this.col * this.size, this.row * this.size, this.size, this.size); // draw square at current row/column
+    }
+
+    bleach() {
+        if(this.initialOpacity < this.opacity){
+            this.initialOpacity += 1; // opacity goes up, make squares fade into existence
+        }
     }
 }
